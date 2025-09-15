@@ -1,10 +1,8 @@
-# define PIN_LED 13
+# define PIN_LED 7
 void setup() {
   // put your setup code here, to run once:
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, LOW); 
-  Serial.begin(115200); // Initialize serial port
-  Serial.println("start");
 }
 
 void loop() {
@@ -17,7 +15,6 @@ void loop() {
     delay(100);
     digitalWrite(PIN_LED, HIGH);
     delay(100);
-    Serial.println(i);  
   }
 
   digitalWrite(PIN_LED, LOW);
