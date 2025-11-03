@@ -1,30 +1,35 @@
-// Arduino pin assignment
+#include <Servo.h>
 
+// Arduino pin assignment
 #define PIN_IR    0         // IR sensor at Pin A0
 #define PIN_LED 9
+#define PIN_SERVO 10
 
-#define _DIST_MIN 10
-#define _DIST_MAX 25
+#define _DIST_MIN 100.0
+#define _DIST_MAX 250.0
 
 #define _DUTY_MIN 540 // servo full clockwise position (0 degree)
 #define _DUTY_NEU 1450 // servo neutral position (90 degree)
 #define _DUTY_MAX 2360 // servo full counterclockwise position (180 degree)
 
-#define _EMA_ALPHA 0.5
+#define _EMA_ALPHA 0.8
 #define INTERVAL 25
 
 Servo myservo;
 
-float dist_ema, dist_filtered, dist_raw
+float dist_ema, dist_filtered, dist_raw;
 float dist_prev = _DIST_MIN;
-long duty;
+long duty, target;
 unsigned long last_sampling_time;
 
 void setup()
 {
   pinMode(PIN_LED, OUTPUT);
-  Serial.begin(200000);
+  Serial.begin(2000000);
   myservo.attach(PIN_SERVO);
+  
+  myservo.writeMicroseconds(_DUTY_MIN);
+  digitalWrite(PIN_LED, LOW);
 }
 
 void loop()
@@ -39,14 +44,14 @@ void loop()
     dist_filtered = dist_prev;
     digitalWrite(PIN_LED, HIGH);
   } else{
-    dist_prev = dist_raw;
+    dist_prev = dist_raw; 
     dist_filtered = dist_raw;
     digitalWrite(PIN_LED, LOW);
   }
   
   dist_ema = _EMA_ALPHA * dist_filtered + (1-_EMA_ALPHA) * dist_ema;
 
-  duty = (long)(dist_ema - 10.0) * ((_DUTY_MAX - _DUTY_MIN)/(_DIST_MAX - _DIST_MIN)) + _DUTY_MIN;
+  duty = (long)(dist_ema - _DIST_MIN) * ((_DUTY_MAX - _DUTY_MIN)/(_DIST_MAX - _DIST_MIN)) + _DUTY_MIN;
   myservo.writeMicroseconds(duty);
   
   last_sampling_time += INTERVAL;
