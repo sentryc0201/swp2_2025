@@ -15,7 +15,8 @@
 
 Servo myservo;
 
-float dist_ema, dist_filtered, dist_raw, dist_prev;
+float dist_ema, dist_filtered, dist_raw
+float dist_prev = _DIST_MIN;
 long duty;
 unsigned long last_sampling_time;
 
